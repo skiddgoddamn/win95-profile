@@ -1,0 +1,899 @@
+/* ===========================================================================
+   Windows 95 desktop — кастом поверх 98.css
+   98.css даёт окна/кнопки/бордюры/поля; здесь — рабочий стол, таскбар,
+   иконки, хром «браузера», музыкальный плеер и экран выключения.
+   =========================================================================== */
+
+:root {
+  --teal: #008080;
+  --gray: #c0c0c0;
+  --navy: #000080;
+  --hl: #010081; /* выделение */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  background: var(--teal);
+  font-family: var(--font-pixel), "Pixelated MS Sans Serif", "MS Sans Serif",
+    Tahoma, "Segoe UI", sans-serif;
+  color: #000;
+  cursor: default;
+}
+
+/* 98.css выставляет свой шрифт на кнопках/полях/окнах — переопределяем единым
+   пиксельным шрифтом с кириллицей (тот же source-order позже 98.css → побеждает) */
+body,
+button,
+input,
+textarea,
+select,
+optgroup,
+option,
+fieldset,
+legend,
+table,
+.title-bar,
+.title-bar-text,
+.window,
+.window-body,
+.status-bar,
+ul.tree-view {
+  font-family: var(--font-pixel), "Pixelated MS Sans Serif", "MS Sans Serif",
+    Tahoma, "Segoe UI", sans-serif;
+}
+
+/* Бевели «как в Win95» ------------------------------------------------------ */
+.bevel-out {
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff,
+    inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.bevel-in {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+
+/* ===== Рабочий стол ======================================================== */
+.desktop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ===== Иконки на столе ===================================================== */
+.desktop-icons {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 82px;
+}
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 78px;
+  padding: 4px 2px;
+  background: transparent;
+  border: 1px dotted transparent;
+  cursor: pointer;
+  text-align: center;
+  font: inherit;
+  color: #fff;
+}
+.desktop-icon .glyph {
+  font-size: 30px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.45));
+}
+.desktop-icon .label {
+  font-size: 11px;
+  line-height: 1.15;
+  padding: 1px 3px;
+  color: #fff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+}
+.desktop-icon:hover .label {
+  text-decoration: underline;
+}
+.desktop-icon.selected {
+  border: 1px dotted #fff;
+}
+.desktop-icon.selected .glyph {
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.45)) brightness(0.85)
+    sepia(1) hue-rotate(190deg) saturate(3);
+}
+.desktop-icon.selected .label {
+  background: var(--hl);
+  text-shadow: none;
+}
+
+/* ===== Таскбар ============================================================= */
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 3px;
+  background: var(--gray);
+  border-top: 1px solid #fff;
+  z-index: 1000;
+}
+.start-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 7px 0 4px;
+  font-weight: bold;
+  font-size: 13px;
+}
+.start-button .flag {
+  font-size: 15px;
+  line-height: 1;
+}
+.start-button.active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  padding: 1px 6px 0 5px;
+}
+.taskbar-sep {
+  width: 2px;
+  align-self: stretch;
+  margin: 3px 2px;
+  box-shadow: inset -1px 0 #fff, inset 1px 0 #808080;
+}
+.task-button {
+  height: 24px;
+  max-width: 200px;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.task-button.active {
+  font-weight: bold;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  background-image: repeating-conic-gradient(
+    #c0c0c0 0% 25%,
+    #b0b0b0 0% 50%
+  );
+  background-size: 3px 3px;
+}
+.tray {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080;
+}
+
+/* ===== Меню «Пуск» ========================================================= */
+.startmenu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+}
+.startmenu {
+  position: fixed;
+  left: 3px;
+  bottom: 31px;
+  z-index: 1002;
+  display: flex;
+  min-width: 220px;
+  padding: 3px;
+  background: var(--gray);
+}
+.startmenu-side {
+  width: 30px;
+  background: linear-gradient(to top, #000080, #1084d0);
+  color: #fff;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: left;
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 1px;
+  padding: 8px 4px;
+}
+.startmenu-side b {
+  color: #fff;
+}
+.startmenu-side span {
+  font-weight: normal;
+}
+.startmenu-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+}
+.startmenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 18px 5px 6px;
+  font-size: 13px;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+}
+.startmenu-item .mi-glyph {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+}
+.startmenu-item:hover {
+  background: var(--navy);
+  color: #fff;
+}
+.startmenu-divider {
+  height: 2px;
+  margin: 3px 2px;
+  box-shadow: inset 0 1px #808080, inset 0 -1px #fff;
+}
+
+/* ===== Окно-«браузер» ====================================================== */
+.browser-window {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 680px;
+  max-width: 94vw;
+  height: 80vh;
+  max-height: 580px;
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+}
+.browser-window.hidden {
+  display: none;
+}
+.browser-window .title-bar-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ie-menubar {
+  display: flex;
+  gap: 1px;
+  padding: 2px 3px;
+  font-size: 12px;
+}
+.ie-menubar span {
+  padding: 1px 7px;
+  cursor: default;
+}
+.ie-menubar span u {
+  text-decoration: underline;
+}
+.ie-menubar span:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+.ie-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  margin: 1px 0;
+  box-shadow: inset 0 1px #fff, inset 0 -1px #808080;
+}
+.ie-toolbar button {
+  min-width: 0;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.ie-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 5px;
+}
+.ie-address > label {
+  font-size: 12px;
+  color: #404040;
+}
+.ie-address form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ie-address .addr {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 6px;
+  background: #fff;
+  font-size: 12px;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  cursor: text;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ie-address .addr .globe {
+  flex: none;
+}
+
+.ie-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 2px 0;
+  padding: 16px 18px 22px;
+  background: #fff;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+
+.browser-window .status-bar {
+  margin-top: 2px;
+}
+
+/* ===== Контент профиля (внутри «браузера») ================================ */
+.profile {
+  color: #000;
+  max-width: 620px;
+}
+.profile a {
+  color: #0000ee;
+}
+.profile-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #c0c0c0;
+  margin-bottom: 14px;
+}
+.avatar {
+  flex: none;
+  width: 108px;
+  height: 132px;
+  object-fit: cover;
+  background: #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #606060;
+  text-align: center;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+img.avatar {
+  padding: 0;
+}
+.profile-head h1 {
+  margin: 2px 0 2px;
+  font-size: 26px;
+  font-weight: bold;
+}
+.profile-head .nick {
+  color: #008000;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+.profile-head .tagline {
+  font-size: 14px;
+  margin: 0 0 4px;
+}
+.online-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b510;
+  box-shadow: 0 0 4px #10b510;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* fieldset-секции (98.css рисует рамку с legend) */
+.profile fieldset {
+  margin: 0 0 14px;
+  padding: 12px 14px 14px;
+}
+.profile legend {
+  font-weight: bold;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 14px;
+  font-size: 14px;
+}
+.info-grid dt {
+  color: #404040;
+}
+.info-grid dd {
+  margin: 0;
+  font-weight: bold;
+}
+
+.placeholder-note {
+  font-size: 13px;
+  color: #707070;
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.interest-chip {
+  padding: 2px 9px;
+  font-size: 13px;
+  background: var(--gray);
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff,
+    inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+
+/* ===== Контакты ============================================================ */
+.contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  font-size: 14px;
+  color: #000 !important;
+  text-decoration: none;
+}
+.contact-link .ci {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+.contact-link b {
+  font-weight: bold;
+}
+.contact-link small {
+  color: #505050;
+  margin-left: auto;
+  font-size: 12px;
+}
+
+/* ===== Фото ================================================================ */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+.photo-tile {
+  aspect-ratio: 1 / 1;
+  background: #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #707070;
+  overflow: hidden;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  cursor: pointer;
+}
+.photo-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== Музыкальный плеер =================================================== */
+.player-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.album-cover {
+  flex: none;
+  width: 66px;
+  height: 66px;
+  background: linear-gradient(135deg, #6a3093, #a044ff);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  overflow: hidden;
+}
+.album-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.album-meta .album-title {
+  font-weight: bold;
+  font-size: 15px;
+}
+.album-meta .album-sub {
+  font-size: 13px;
+  color: #404040;
+}
+
+.tracklist {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 4px;
+  background: #fff;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.track:hover {
+  background: #e6e6e6;
+}
+.track.playing {
+  background: var(--navy);
+  color: #fff;
+}
+.track .t-idx {
+  width: 18px;
+  color: inherit;
+  opacity: 0.7;
+  text-align: right;
+}
+.track .t-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track .t-dur {
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+.track.playing .t-eq {
+  color: #7CFC00;
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.transport button {
+  min-width: 34px;
+  height: 26px;
+  font-size: 13px;
+}
+.transport .now {
+  flex: 1 1 140px;
+  font-size: 12px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.transport .time {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: #303030;
+}
+.seek-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.seek-row input[type="range"] {
+  flex: 1;
+}
+.vol-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.vol-row input[type="range"] {
+  width: 90px;
+}
+
+/* ===== Экран выключения ==================================================== */
+.shutdown {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.shutdown p {
+  color: #d8a000;
+  font-size: clamp(18px, 4vw, 34px);
+  text-align: center;
+  line-height: 1.5;
+  text-shadow: 0 0 2px #d8a000;
+  letter-spacing: 1px;
+}
+.shutdown small {
+  display: block;
+  margin-top: 24px;
+  color: #666;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+/* ===== Мобилки ============================================================= */
+@media (max-width: 560px) {
+  .browser-window {
+    width: 96vw;
+    height: calc(100vh - 90px);
+    max-height: none;
+    top: calc(50% - 12px);
+  }
+  .desktop-icons {
+    width: 68px;
+  }
+  .ie-menubar,
+  .ie-toolbar .lbl {
+    display: none;
+  }
+  .profile-head {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* ===== v2: настоящие иконки, обои, язык, заставка загрузки ============== */
+
+/* обои рабочего стола */
+.desktop {
+  background: #008080 url("/bg.gif") center center / cover no-repeat;
+}
+
+/* PNG-иконки Win95 — чётко-пиксельно; SVG (tg/discord) остаются гладкими */
+img[src$=".png"] {
+  image-rendering: pixelated;
+}
+
+/* иконки на рабочем столе */
+.glyph-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+
+/* флаг на кнопке «Пуск» */
+.start-button .flag {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+/* кнопка окна в таскбаре */
+.task-ico {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  object-fit: contain;
+}
+.task-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* иконка в заголовке окна */
+.tb-ico {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  object-fit: contain;
+}
+
+/* адресная строка */
+.ie-address .addr .globe {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  object-fit: contain;
+}
+.ie-address .addr .addr-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #000;
+}
+
+/* иконки в меню «Пуск» */
+.startmenu-item .mi-glyph {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  object-fit: contain;
+}
+
+/* иконки контактов */
+.contact-link .ci {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  object-fit: contain;
+}
+
+/* индикатор языка в трее */
+.tray-lang {
+  font: inherit;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 2px 6px;
+  background: #c0c0c0;
+  cursor: pointer;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff,
+    inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.tray-lang:active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080;
+}
+.tray-vol {
+  font-size: 12px;
+}
+
+/* ===== Заставка загрузки Windows 95 ===================================== */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: radial-gradient(circle at 50% 42%, #101018 0%, #000 75%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  cursor: wait;
+  animation: bootHide 0.6s ease 3s forwards; /* прячется сама даже без JS */
+}
+.boot--gone {
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s ease, visibility 0s 0.4s;
+}
+@keyframes bootHide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.boot-inner {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+.boot-flag {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+.boot-title {
+  color: #fff;
+  text-align: left;
+  line-height: 1;
+}
+.boot-ms {
+  display: block;
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.boot-win {
+  display: block;
+  font-size: 50px;
+  font-weight: bold;
+}
+.boot-win b {
+  color: #ffd23f;
+  margin-left: 8px;
+}
+.boot-bar {
+  width: 264px;
+  height: 22px;
+  padding: 3px;
+  background: #0e0e0e;
+  box-shadow: inset -1px -1px #3a3a3a, inset 1px 1px #000, 0 0 0 1px #2a2a2a;
+}
+.boot-bar-fill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    #1084d0 0 16px,
+    transparent 16px 26px
+  );
+  background-size: 52px 100%;
+  animation: bootMarch 0.9s linear infinite;
+}
+@keyframes bootMarch {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 52px 0;
+  }
+}
+.boot-hint {
+  color: #9a9a9a;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 560px) {
+  .boot-flag {
+    width: 64px;
+    height: 64px;
+  }
+  .boot-win {
+    font-size: 36px;
+  }
+  .boot-bar {
+    width: 78vw;
+  }
+}
