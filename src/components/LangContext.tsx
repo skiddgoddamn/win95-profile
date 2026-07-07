@@ -12,11 +12,23 @@ interface Ctx {
 
 const LangCtx = createContext<Ctx | null>(null);
 
-export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("ru");
+export function LangProvider({
+  children,
+  initialLang = "ru",
+  detect = false,
+}: {
+  children: React.ReactNode;
+  /** язык, с которым страница пре-рендерится (задаётся роутом: / → ru, /en → en) */
+  initialLang?: Lang;
+  /** авто-определение по браузеру (только на корневом роуте) */
+  detect?: boolean;
+}) {
+  const [lang, setLangState] = useState<Lang>(initialLang);
 
-  // 1) явный выбор пользователя приоритетнее; 2) иначе — язык браузера
+  // 1) явный выбор пользователя приоритетнее; 2) иначе — язык браузера.
+  // Работает только на корневом роуте (detect); на /en язык фиксирован.
   useEffect(() => {
+    if (!detect) return;
     try {
       const saved = localStorage.getItem("lang");
       if (saved === "ru" || saved === "en") {
@@ -24,13 +36,16 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
         return;
       }
     } catch {}
-
     const browserLangs = [navigator.language, ...(navigator.languages || [])].filter(
       Boolean
     );
-    const isRu = browserLangs.some((l) => /^ru/i.test(l));
-    setLangState(isRu ? "ru" : "en");
-  }, []);
+    setLangState(browserLangs.some((l) => /^ru/i.test(l)) ? "ru" : "en");
+  }, [detect]);
+
+  // держим атрибут <html lang> актуальным (для SEO и скринридеров)
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const setLang = (l: Lang) => {
     setLangState(l);

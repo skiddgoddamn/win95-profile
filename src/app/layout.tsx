@@ -34,7 +34,14 @@ export const metadata: Metadata = {
   applicationName: ru.name,
   authors: [{ name: ru.name, url: "https://zaytsv.com" }],
   creator: ru.name,
-  alternates: { canonical: `${SITE}/` },
+  alternates: {
+    canonical: `${SITE}/`,
+    languages: {
+      "ru-RU": `${SITE}/`,
+      "en-US": `${SITE}/en/`,
+      "x-default": `${SITE}/`,
+    },
+  },
   referrer: "no-referrer",
   robots: { index: true, follow: true },
   icons: {
