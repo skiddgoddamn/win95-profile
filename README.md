@@ -1,50 +1,62 @@
 # win95-profile
 
-Личная одностраничка в стиле **Windows 95**: полноэкранный рабочий стол (обои,
-иконки, таскбар с «Пуск» и живыми часами), а по центру — окно «Internet Explorer»
-с открытой персональной страницей (инфо, музыка, фото, контакты).
+A personal homepage that boots straight into **Windows 95**. A full-screen retro
+desktop — teal wallpaper, desktop icons, a working Start menu and a live taskbar
+clock — with an *Internet Explorer* window in the middle showing the profile
+(intro, music player, photo gallery and links).
 
-Стек: **Next.js 15 (App Router) + React 19 + TypeScript + [98.css](https://jdan.github.io/98.css/)**.
-Сайт полностью клиентский → собирается в статику и кладётся на GitHub Pages / любой хостинг.
+🔗 **Live:** https://ilya.zaytsv.com
 
-## Запуск локально
+Built with **Next.js** (static export), so it's just HTML/CSS/JS and runs on any
+static host — GitHub Pages included.
+
+## Features
+
+- 🖥️ Windows 95 desktop UI — real Win95 icons, Start menu, taskbar, tray clock
+- 🪟 Internet Explorer window with menu bar, toolbar and address bar (minimize / close, restore from taskbar)
+- 🎵 Built-in music player
+- 🖼️ Photo gallery and contact links (website, Telegram, Discord, GitHub, e-mail)
+- 🎬 Pixel Windows 95 boot animation (CSS-driven, click to skip)
+- 🐱 [oneko](https://github.com/adryd325/oneko.js) — a pixel cat that chases the cursor
+- 🌍 Russian / English with **automatic browser-language detection** and a taskbar switcher
+- 🔤 One consistent pixel font with Cyrillic support (Pixelify Sans)
+- 🔎 SEO-ready — content is server-rendered into static HTML, plus Open Graph and JSON-LD `Person`
+
+## Tech stack
+
+- [Next.js 15](https://nextjs.org/) (App Router) · React 19 · TypeScript
+- Static export (`output: 'export'`)
+- [98.css](https://jdan.github.io/98.css/) for the window chrome
+- [@react95/icons](https://github.com/react95-io/React95) for authentic Win95 icons
+- [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) pixel font
+
+## Run locally
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000
+npm run build    # static export -> ./out
 ```
 
-## Что где править (весь контент — в одном файле)
+> Don't run `npm run build` while `npm run dev` is running — both write to `.next`.
 
-**`content/profile.ts`** — имя, статус, «о себе», интересы, музыка, фото, ссылки.
+## Editing content
 
-| Что | Как |
-|-----|-----|
-| Имя / статус / «о себе» / интересы | поля `name`, `tagline`, `about`, `interests` |
-| Аватар | положи файл в `public/photos/`, укажи `avatar: "/photos/avatar.jpg"` |
-| Фото-галерея | файлы в `public/photos/`, пути в массив `photos: [...]` |
-| Ссылки (tg/discord/сайт/mail) | блок `links` — уже заполнен |
-| Музыка | массив `music` — уже стримится с hitmos, файлы качать не нужно |
+Everything (both languages, links, music and photos) lives in a single file:
+[`content/profile.ts`](content/profile.ts). Put images in `public/photos/` and
+audio in `public/music/`, then reference their paths in that file.
 
-Плейсхолдеры (аватар, «о себе», интересы, фото) сами покажут подсказку, пока пусто.
+## Deployment
 
-## Музыка (важно)
+Every push to `main` runs [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml),
+which builds the static export and publishes it to GitHub Pages. The custom
+domain is configured through [`public/CNAME`](public/CNAME).
 
-Треки берутся стримом с hitmos. У hitmos есть hotlink-защита по `Referer`, поэтому
-в `src/app/layout.tsx` стоит `referrer: "no-referrer"` — без него треки отдают **403**.
-Не убирай этот параметр. Хочешь свои mp3 — положи в `public/music/` и укажи путь
-`src: "/music/x.mp3"` в `content/profile.ts`.
+## Credits
 
-## Деплой на GitHub Pages
+- [98.css](https://jdan.github.io/98.css/) — Windows 98/95 UI styling
+- [@react95/icons](https://github.com/react95-io/React95) — Windows 95 icon set
+- [oneko.js](https://github.com/adryd325/oneko.js) — the cursor-chasing cat
+- [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) — pixel typeface
 
-```bash
-npm run build        # создаёт папку out/ (готовая статика)
-```
-
-- **На свой домен `zaytsv.com` (в корень)** — просто отдай папку `out/`. Ничего
-  больше настраивать не нужно.
-- **Как репозиторий-проект** (`username.github.io/win95-profile`) — раскомментируй
-  `basePath` / `assetPrefix` в `next.config.ts` и подставь имя репозитория, иначе
-  ассеты уйдут в 404.
-
-Проще всего — GitHub Action, который на пуш собирает `out/` и публикует в Pages.
+Brand logos, icons, fonts and any music belong to their respective owners.
