@@ -15,7 +15,15 @@ export default function DesktopIcon({ icon, label, selected, onClick }: Props) {
       onClick={onClick}
       type="button"
     >
-      <img className="glyph-img" src={icon} alt="" aria-hidden draggable={false} />
+      <img
+        className="glyph-img"
+        src={icon}
+        alt=""
+        aria-hidden
+        draggable={false}
+        fetchPriority="high"
+        decoding="async"
+      />
       <span className="label">{label}</span>
     </button>
   );

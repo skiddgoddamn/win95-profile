@@ -700,9 +700,16 @@ img.avatar {
 
 /* ===== v2: настоящие иконки, обои, язык, заставка загрузки ============== */
 
-/* обои рабочего стола */
+/* обои рабочего стола: сразу — бирюзовый фон; тяжёлый bg.gif подгружается
+   отложенно (после иконок и остального) и включается классом .wallpaper-ready */
 .desktop {
-  background: #008080 url("/bg.gif") center center / cover no-repeat;
+  background-color: #008080;
+}
+.desktop.wallpaper-ready {
+  background-image: url("/bg.gif");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 /* PNG-иконки Win95 — чётко-пиксельно; SVG (tg/discord) остаются гладкими */

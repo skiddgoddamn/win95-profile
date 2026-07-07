@@ -19,7 +19,13 @@ export default function BootScreen() {
       aria-hidden
     >
       <div className="boot-inner">
-        <img className="boot-flag" src="/icons/boot-flag.png" alt="" draggable={false} />
+        <img
+          className="boot-flag"
+          src="/icons/boot-flag.png"
+          alt=""
+          draggable={false}
+          fetchPriority="high"
+        />
         <div className="boot-title">
           <span className="boot-ms">Microsoft</span>
           <span className="boot-win">

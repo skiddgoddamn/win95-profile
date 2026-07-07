@@ -60,7 +60,13 @@ export default function Profile() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <img src={src} alt={`${t.photoWord} ${i + 1}`} loading="lazy" />
+                  <img
+                    src={src}
+                    alt={`${t.photoWord} ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    fetchPriority="low"
+                  />
                 </a>
               ))
             : Array.from({ length: 6 }).map((_, i) => (

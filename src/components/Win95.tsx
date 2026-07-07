@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { links } from "../../content/profile";
 import { useLang } from "./LangContext";
 import DesktopIcon from "./DesktopIcon";
@@ -18,6 +18,23 @@ export default function Win95() {
   const [startOpen, setStartOpen] = useState(false);
   const [shutdown, setShutdown] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [wallpaper, setWallpaper] = useState(false);
+
+  // Тяжёлые анимированные обои грузим последними — после того как загрузятся
+  // иконки/лого и остальной критичный контент (window "load").
+  useEffect(() => {
+    const load = () => {
+      const img = new Image();
+      img.onload = () => setWallpaper(true);
+      img.src = "/bg.gif";
+    };
+    if (document.readyState === "complete") {
+      load();
+      return;
+    }
+    window.addEventListener("load", load, { once: true });
+    return () => window.removeEventListener("load", load);
+  }, []);
 
   const openWindow = () => setWin("open");
 
@@ -57,7 +74,10 @@ export default function Win95() {
   }
 
   return (
-    <div className="desktop" onMouseDown={clearDesktop}>
+    <div
+      className={`desktop${wallpaper ? " wallpaper-ready" : ""}`}
+      onMouseDown={clearDesktop}
+    >
       <div className="desktop-icons" onMouseDown={(e) => e.stopPropagation()}>
         {icons.map((ic) => (
           <DesktopIcon
