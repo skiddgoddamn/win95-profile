@@ -11,6 +11,8 @@ function fmt(t: number) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+const MAX_RETRIES = 5;
+
 /** Мини-плеер в духе Windows Media Player. Локальные mp3 из public/music. */
 export default function MusicPlayer() {
   const { t } = useLang();
@@ -20,7 +22,9 @@ export default function MusicPlayer() {
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
   const [vol, setVol] = useState(0.8);
-  const [error, setError] = useState(false);
+
+  const wantPlay = useRef(false); // намерение играть (для авто-повтора)
+  const retries = useRef(0);
 
   const track = tracks[idx];
 
@@ -34,8 +38,11 @@ export default function MusicPlayer() {
       setDur(0);
     }
     a.volume = vol;
-    setError(false);
-    a.play().catch(() => setError(true));
+    retries.current = 0;
+    wantPlay.current = true;
+    a.play().catch(() => {
+      /* политика автоплея / гонки — ошибку поймает onError и повторит */
+    });
   };
 
   const toggle = () => {
@@ -45,12 +52,34 @@ export default function MusicPlayer() {
       playIndex(idx);
       return;
     }
-    if (a.paused) a.play().catch(() => setError(true));
-    else a.pause();
+    if (a.paused) {
+      wantPlay.current = true;
+      a.play().catch(() => {});
+    } else {
+      wantPlay.current = false;
+      a.pause();
+    }
   };
 
   const next = () => playIndex((idx + 1) % tracks.length);
   const prev = () => playIndex((idx - 1 + tracks.length) % tracks.length);
+
+  // Тихий авто-повтор: «оборванную» загрузку (ABORTED при смене трека) игнорируем,
+  // реальную ошибку — пробуем загрузить заново несколько раз. Ошибку не показываем.
+  const handleError = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (a.error && a.error.code === 1) return; // MEDIA_ERR_ABORTED — просто переключили трек
+    if (!wantPlay.current) return;
+    if (retries.current >= MAX_RETRIES) return;
+    retries.current += 1;
+    window.setTimeout(() => {
+      const el = audioRef.current;
+      if (!el || !wantPlay.current) return;
+      el.load(); // повторная попытка того же src
+      el.play().catch(() => {});
+    }, 500 * retries.current);
+  };
 
   const onSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const a = audioRef.current;
@@ -72,8 +101,11 @@ export default function MusicPlayer() {
         preload="none"
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        onPlaying={() => {
+          retries.current = 0; // успешно пошло — сбрасываем счётчик повторов
+        }}
         onEnded={next}
-        onError={() => track && setError(true)}
+        onError={handleError}
         onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => setDur(e.currentTarget.duration)}
       />
@@ -154,12 +186,6 @@ export default function MusicPlayer() {
         />
         <span aria-hidden>🔊</span>
       </div>
-
-      {error && (
-        <p className="placeholder-note" style={{ color: "#a00000" }}>
-          ⚠ {t.player.error}
-        </p>
-      )}
     </div>
   );
 }
